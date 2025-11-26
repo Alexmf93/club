@@ -7,10 +7,10 @@ function menu() { ?>
         <a href="#noticias">Noticias</a>
        
         <!-- Gestión interna -->
-        <a href="#admin-testimonios">Testimonios</a>
-        <a href="#admin-socios">Socios</a>
-        <a href="#admin-servicios">Servicios</a>
-        <a href="#admin-noticias">Noticias Gestión</a>
-        <a href="#admin-citas">Citas</a>
+        <a href="testimonio.php">Testimonios</a>
+        <a href="socio.php">Socios</a>
+        <a href="servicio.php">Servicios</a>
+        <a href="noticia.php">Noticias Gestión</a>
+        <a href="cita.php">Citas</a>
     </nav>
 <?php } ?>
