@@ -2,7 +2,7 @@
 function menu() { ?>
     <nav class="menu">
         <!-- Menú principal de la web -->
-        <a href="#inicio">Inicio</a>
+        <a href="paginaPrincipal.php">Inicio</a>
         <a href="#equipos">Equipos</a>
         <a href="#noticias">Noticias</a>
        

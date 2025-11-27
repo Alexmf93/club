@@ -30,6 +30,7 @@ menu();
             <p>En el Club Deportivo El Real entrenamos cuerpo y mente. Únete a nuestros equipos, participa en eventos y crece con nosotros.</p>
             <a href="#equipos" class="btn btn-primary">Descubre Nuestros Equipos</a>
                     <div id="noticias">
+        <!-- Noticias -->
             <?php
             try {
                 $pdo = new PDO(
@@ -42,12 +43,11 @@ menu();
                 //Para el ejercicio habria que poner limit 3 y un where para que la fecha de publicacion sea posterior a la consulta
                 $stmt = $pdo->query("SELECT * FROM noticia WHERE fecha_publicacion < NOW() ORDER BY fecha_publicacion DESC LIMIT 3");
                 if ($stmt->rowCount() > 0) {
-                    echo '<h2>Noticias destacadas:</h2>';
-                    
+                    echo '<h2>Noticias destacadas:</h2>';                    
                     echo '<div class="news-grid">';
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         echo "<article class='news-card'>
-                            <img src='$row[imagen]' alt='$row[titulo]'>
+                            <img class='new_image' src='$row[imagen]' alt='$row[titulo]'>
                             <div class='news-content'>
                             <h3>$row[titulo]</h3>
                             <p>$row[contenido]</p>
@@ -65,54 +65,72 @@ menu();
         </div>
         </div>
     </section>
-
     <!-- EQUIPOS -->
     <section id="equipos" class="services-section">
         <div class="container">
-            <h2>Nuestros Equipos</h2>
-            <ul class="services-list">
-                <li class="service-item"><h3>Fútbol Sala</h3><p>Entrenos 3 veces por semana, torneos y competición anual.</p></li>
-                <li class="service-item"><h3>Baloncesto</h3><p>Plantilla senior y junior, alto rendimiento y preparación técnica.</p></li>
-                <li class="service-item"><h3>Boxeo</h3><p>Entrenamiento funcional, sparring controlado y sesiones personales.</p></li>
-                <li class="service-item"><h3>Pádel</h3><p>Ligas internas, reservas de pista y clases privadas con entrenador.</p></li>
-            </ul>
-        </div>
-    </section>
+            <?php
+            try {
+                $pdo = new PDO(
+                    "mysql:host=$db_host;dbname=$db_name",
+                    $db_user,
+                    $db_password
+                );
 
-    <!-- NOTICIAS -->
-    <section id="noticias" class="latest-news-section">
+                $stmt = $pdo->query("SELECT * FROM servicios LIMIT 4");
+                if ($stmt->rowCount() > 0) {
+                    echo '<h2>Nuestros servicios:</h2>';
+                    echo '<div class="services-list">';
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<article class='services-list'>
+                        <div class='service-item'>
+                            <h3>$row[descripcion]</h3>
+                            <p>$row[duracion] €</p>
+                            <p>$row[precio] min</p>
+                        </div>
+                        </article>";
+                    }
+                    echo '</div>';
+                }
+            } catch (PDOException $e) {
+                echo '<p class="error">❌ Error de conexión: ' . $e->getMessage() . '</p>';
+            }
+            ?>
+    <!-- TESTIMONIO -->
+    <section id="equipos" class="services-section">
         <div class="container">
-            <h2>Últimas Noticias</h2>
-            <div class="news-grid">
-                <article class="news-card">
-                    <img src="imagenes/premio.jpg" alt="Victoria Liga">
-                    <div class="news-content">
-                        <h3>Victoria del Fútbol Sala en Liga</h3>
-                        <p>El equipo senior vence 4-2 y se coloca primero en la clasificación.</p>
-                        <a href="noticias.php" class="read-more">Leer más</a>
-                    </div>
-                </article>
-                <article class="news-card">
-                    <img src="imagenes/padel.jpg" alt="Torneo Pádel">
-                    <div class="news-content">
-                        <h3>Nuevo Torneo Local de Pádel</h3>
-                        <p>Abiertas inscripciones para el torneo mixto del próximo mes.</p>
-                        <a href="noticias.php" class="read-more">Leer más</a>
-                    </div>
-                </article>
-                <article class="news-card">
-                    <img src="imagenes/boxeo.jpg" alt="Sesión Boxeo">
-                    <div class="news-content">
-                        <h3>Entrenamiento especial de Boxeo</h3>
-                        <p>Sábado a las 18:00, sesión intensiva con entrenador invitado.</p>
-                        <a href="noticias.php" class="read-more">Leer más</a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-</main>
+            <?php
+            try {
+                $pdo = new PDO(
+                    "mysql:host=$db_host;dbname=$db_name",
+                    $db_user,
+                    $db_password
+                );
 
+                $stmt = $pdo->query("SELECT t.*, u.nombre FROM testimonio t JOIN usuarios u ON t.id_autor = u.id ORDER BY RAND() LIMIT 1");
+                if ($stmt->rowCount() > 0) {
+                    echo '<h2>Testimonios:</h2>';
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        //Formatear ka fecha en español ain hora
+                        $fechaObj = new DateTime($row['fecha']);
+                        $meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                        $mes = $meses[(int)$fechaObj->format('m') - 1];
+                        $fechaFormato = $fechaObj->format('j') . ' de ' . $mes . ' de ' . $fechaObj->format('Y');
+                        
+                        echo "<article class='services-list'>
+                        <div class='service-item'>
+                            <h3>" . htmlspecialchars($row['nombre']) . "</h3>
+                            <p>" . htmlspecialchars($row['contenido']) . "</p>
+                            <p>" . htmlspecialchars($fechaFormato) . "</p>
+                        </div>
+                    </article>";
+                    }
+                    echo '</div>';
+                }
+            } catch (PDOException $e) {
+                echo '<p class="error">❌ Error de conexión: ' . $e->getMessage() . '</p>';
+            }
+            ?>
+            
 <?php
 
 include "footer.php";

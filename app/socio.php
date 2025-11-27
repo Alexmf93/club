@@ -1,3 +1,6 @@
+<?php
+require_once 'db_config.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +14,39 @@
     include "menu.php";
     menu();
     ?>
+    <?php
+            try {
+                $pdo = new PDO(
+                    "mysql:host=$db_host;dbname=$db_name",
+                    $db_user,
+                    $db_password
+                );
+
+                // Ejemplo: Mostrar datos de una tabla
+                //Para el ejercicio habria que poner limit 3 y un where para que la fecha de publicacion sea posterior a la consulta
+                $stmt = $pdo->query("SELECT * FROM usuarios");
+                if ($stmt->rowCount() > 0) {
+                    echo '<h2>Socios:</h2>';                    
+                    echo '<div class="news-grid">';
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<article class='news-card socios-card'>
+                            <img class='img_usuario' src='$row[foto]' alt='$row[nombre]'>
+                            <div class='news-content'>
+                            <h3>$row[nombre]</h3>
+                            <p>Rol: $row[rol]</p>
+                            <p>Teléfono: $row[telefono]</p>
+                            <p>Fecha de registro: $row[fecha_registro]</p>
+                    </div>
+                </article>";
+                    }
+                    echo '</div>';
+
+                }
+            } catch (PDOException $e) {
+                echo '<p class="error">❌ Error de conexión: ' . $e->getMessage() . '</p>';
+            }
+            ?>
+
     <div class="container2">
         <main>
             <section id="admin-socios">
