@@ -13,21 +13,37 @@ require_once 'db_config.php';
     <?php 
     include "menu.php";
     menu();
-    ?>
-    <?php
-            try {
+
+
+     try {
                 $pdo = new PDO(
                     "mysql:host=$db_host;dbname=$db_name",
                     $db_user,
                     $db_password
                 );
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                // Ejemplo: Mostrar datos de una tabla
-                //Para el ejercicio habria que poner limit 3 y un where para que la fecha de publicacion sea posterior a la consulta
-                $stmt = $pdo->query("SELECT * FROM usuarios");
+                // Buscador por nombre o teléfono (GET ?q=)
+                $search = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+                if ($search !== '') {
+                    $sql = "SELECT * FROM usuarios WHERE nombre LIKE :q OR telefono LIKE :q ORDER BY nombre ASC";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute([':q' => "%$search%"]);
+                } else {
+                    $stmt = $pdo->query("SELECT * FROM usuarios ORDER BY nombre ASC");
+                }
+
+                // Formulario de búsqueda
+                echo '<h2>Socios:</h2>';
+                echo '<form method="get" action="" class="search-form" style="margin-bottom:1rem;">
+                        <input type="text" name="q" value="'.htmlspecialchars($search).'" placeholder="Buscar por nombre o teléfono" />
+                        <button type="submit" class="button button-primary">Buscar</button>
+                        <a href="socio.php" class="button button-secondary" style="margin-left:0.5rem;">Limpiar</a>
+                      </form>';
+
+                echo '<div class="news-grid">';
                 if ($stmt->rowCount() > 0) {
-                    echo '<h2>Socios:</h2>';                    
-                    echo '<div class="news-grid">';
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         echo "<article class='news-card socios-card'>
                             <img class='img_usuario' src='$row[foto]' alt='$row[nombre]'>
@@ -39,13 +55,15 @@ require_once 'db_config.php';
                     </div>
                 </article>";
                     }
-                    echo '</div>';
-
+                } else {
+                    echo "<p>No se han encontrado socios.</p>";
                 }
+                echo '</div>';
+
             } catch (PDOException $e) {
                 echo '<p class="error">❌ Error de conexión: ' . $e->getMessage() . '</p>';
             }
-            ?>
+    ?>
 
     <div class="container2">
         <main>
