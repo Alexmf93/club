@@ -1,48 +1,117 @@
+<?php
+require_once 'db_config.php';
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testimonio</title>
+    <title>Testimonios</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container2">
-        <?php 
+<?php
 include "menu.php";
 menu();
+
+// Conexión global
+try {
+    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo '<p class="error">❌ Error de conexión: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    exit;
+}
 ?>
-<main>
-            <section id="admin-testimonios">
-                <div class="container">
-                    <h2>Gestión de Testimonios</h2>
-                    <form action="" method="post" enctype="multipart/form-data" id="testimonioForm">
-                        <div class="formulario">
-                            <div class="form-group">
-                                <label for="autor">Autor</label>
-                                <input type="text" name="autor" id="autor"/>
-                                <span id="autorError" class="error"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="testimonio">Testimonio</label>
-                                <textarea name="testimonio" id="testimonio"></textarea>
-                                <span id="testimonioError" class="error"></span>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="button button-primary">Enviar</button>
-                                <button type="reset" class="button button-secondary">Cancelar</button>
-                                <a href="paginaPrincipal.php" class="button button-secondary">Atras</a>
-                            </div>
+<div class="container2">
+    <main>
+        <section id="listado-testimonios" class="services-section">
+            <div class="container">
+                <h2>Testimonios</h2>
+
+<?php
+// Obtener todos los testimonios ordenados por fecha (más reciente primero)
+try {
+    $sql = "SELECT t.*, u.nombre AS autor 
+            FROM testimonio t
+            JOIN usuarios u ON t.id_autor = u.id
+            ORDER BY t.fecha DESC";
+    $stmt = $pdo->query($sql);
+
+    if ($stmt && $stmt->rowCount() > 0) {
+        echo '<div class="services-list">';
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // Formatear fecha en español
+            $fechaObj = new DateTime($row['fecha']);
+            $meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            $mes = $meses[(int)$fechaObj->format('m') - 1];
+            $fechaFormato = $fechaObj->format('j') . ' de ' . $mes . ' de ' . $fechaObj->format('Y');
+
+            echo '<article class="service-card">
+                    <div class="service-item">
+                        <h3>' . htmlspecialchars($row['autor']) . '</h3>
+                        <p>' . htmlspecialchars($row['contenido']) . '</p>
+                        <p><small>' . htmlspecialchars($fechaFormato) . '</small></p>
+                    </div>
+                  </article>';
+        }
+        echo '</div>';
+    } else {
+        echo '<p>No hay testimonios registrados aún.</p>';
+    }
+} catch (PDOException $e) {
+    echo '<p class="error">❌ Error al obtener testimonios: ' . htmlspecialchars($e->getMessage()) . '</p>';
+}
+?>
+            </div>
+        </section>
+
+        <section id="admin-testimonios">
+            <div class="container">
+                <h2>Insertar Nuevo Testimonio</h2>
+                <form action="procesar_testimonio.php" method="post" id="testimonioForm">
+                    <div class="formulario">
+                        <div class="form-group">
+                            <label for="id_autor">Autor (Socio)</label>
+                            <select name="id_autor" id="id_autor">
+                                <option value="">-- Seleccionar socio --</option>
+<?php
+// Obtener lista de socios para el select
+try {
+    $stmtSocios = $pdo->query("SELECT id, nombre FROM usuarios ORDER BY nombre ASC");
+    if ($stmtSocios && $stmtSocios->rowCount() > 0) {
+        while ($socio = $stmtSocios->fetch(PDO::FETCH_ASSOC)) {
+            echo '<option value="' . (int)$socio['id'] . '">' . htmlspecialchars($socio['nombre']) . '</option>';
+        }
+    }
+} catch (PDOException $e) {
+    echo '<option disabled>Error al cargar socios</option>';
+}
+?>
+                            </select>
+                            <span id="id_autorError" class="error"></span>
                         </div>
-                    </form>
-                </div>
-            </section>
-            </main>
-            <?php
-        include "footer.php";
-        pie();
-        ?>
-    </div>
-    <script src="js/jsTestimonio.js"></script>
+                        <div class="form-group">
+                            <label for="contenido">Testimonio</label>
+                            <textarea name="contenido" id="contenido" placeholder="Escribe tu testimonio aquí..."></textarea>
+                            <span id="contenidoError" class="error"></span>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="button button-primary">Enviar</button>
+                            <button type="reset" class="button button-secondary">Cancelar</button>
+                            <a href="paginaPrincipal.php" class="button button-secondary">Atrás</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<?php
+include "footer.php";
+pie();
+?>
+<script src="js/jsTestimonio.js"></script>
 </body>
 </html>
