@@ -70,7 +70,7 @@ require_once 'db_config.php';
         <main>
             <section id="admin-socios">
                 <div class="container">
-                    <h2>Gestión de Socios</h2>
+                    <h2>Insertar Nuevos Socios</h2>
                     <?php
                     // Cargar datos del socio si viene ID
                     $socioId = isset($_GET['id']) ? (int)$_GET['id'] : null;
