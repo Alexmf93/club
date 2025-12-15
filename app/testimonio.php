@@ -1,5 +1,6 @@
 <?php
 require_once 'db_config.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,6 +27,21 @@ try {
 <div class="container2">
     <main>
         <section id="listado-testimonios" class="services-section">
+            <?php if (isset($_SESSION['success_message'])): ?>
+                <div class="container">
+                    <div class="message success" role="alert">
+                        ✅ <?= htmlspecialchars($_SESSION['success_message']); ?>
+                    </div>
+                </div>
+                <?php unset($_SESSION['success_message']); ?>
+            <?php elseif (isset($_SESSION['error_message'])): ?>
+                <div class="container">
+                    <div class="message error" role="alert">
+                        ❌ <?= htmlspecialchars($_SESSION['error_message']); ?>
+                    </div>
+                </div>
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
             <div class="container">
                 <h2>Testimonios</h2>
 

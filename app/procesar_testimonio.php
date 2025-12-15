@@ -1,5 +1,7 @@
 <?php
 // filepath: c:\Users\AULA4-2DAW\Desktop\club\app\procesar_testimonio.php
+session_start();
+
 require_once 'db_config.php';
 
 function respond_json($data, $status = 200) {
@@ -44,11 +46,14 @@ try {
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
     $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
               || strpos($accept, 'application/json') !== false;
+    
+    $successMessage = "¡Testimonio insertado correctamente!";
 
     if ($isAjax) {
-        respond_json(['success' => true, 'id' => $resultId]);
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]);
     } else {
-        header('Location: testimonio.php');
+        $_SESSION['success_message'] = $successMessage;
+        header('Location: testimonio.php#listado-testimonios');
         exit;
     }
 
@@ -61,7 +66,8 @@ try {
     if ($isAjax) {
         respond_json(['success' => false, 'error' => $msg], 400);
     } else {
-        header('Location: testimonio.php?error=' . urlencode($msg));
+        $_SESSION['error_message'] = $msg;
+        header('Location: testimonio.php#admin-testimonios');
         exit;
     }
 }

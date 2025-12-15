@@ -3,14 +3,13 @@ function menu() { ?>
     <nav class="menu">
         <!-- Menú principal de la web -->
         <a href="paginaPrincipal.php">Inicio</a>
-        <a href="#equipos">Equipos</a>
-        <a href="#noticias">Noticias</a>
-       
+        <a href="#noticias">Noticias destacadas</a>
+        <a href="#equipos">Nuestros servicios</a>
         <!-- Gestión interna -->
         <a href="testimonio.php">Testimonios</a>
         <a href="socio.php">Socios</a>
         <a href="servicio.php">Servicios</a>
-        <a href="noticia.php">Noticias Gestión</a>
+        <a href="noticia.php">Gestión Noticias</a>
         <a href="cita.php">Citas</a>
     </nav>
 <?php } ?>
