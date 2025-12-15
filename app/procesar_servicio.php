@@ -29,6 +29,7 @@ try {
     if ($precio === null || $precio < 0) throw new Exception('El precio debe ser un número positivo.');
 
     if ($id) {
+        // UPDATE
         $sql = "UPDATE servicios SET descripcion = :descripcion, duracion = :duracion, precio = :precio WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -38,7 +39,9 @@ try {
             ':id' => $id,
         ]);
         $resultId = $id;
+        $successMessage = 'Servicio actualizado correctamente.'; // Mensaje de éxito para actualización
     } else {
+        // INSERT
         $sql = "INSERT INTO servicios (descripcion, duracion, precio) VALUES (:descripcion, :duracion, :precio)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -47,6 +50,7 @@ try {
             ':precio' => $precio,
         ]);
         $resultId = (int)$pdo->lastInsertId();
+        $successMessage = 'Nuevo servicio insertado correctamente.'; // Mensaje de éxito para inserción
     }
 
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
@@ -54,9 +58,9 @@ try {
               || strpos($accept, 'application/json') !== false;
 
     if ($isAjax) {
-        respond_json(['success' => true, 'id' => $resultId]);
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]); // Añadido 'message'
     } else {
-        header('Location: servicio.php?id=' . $resultId . '#admin-servicios');
+        header('Location: servicio.php?id=' . $resultId . '&msg=' . urlencode($successMessage) . '#admin-servicios'); // Añadido '&msg'
         exit;
     }
 

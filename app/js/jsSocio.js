@@ -1,7 +1,26 @@
-const formulario = document.getElementById('formularioSocio') || document.getElementById('formulario');
+(function () {
+    const formulario = document.getElementById('formularioSocio') || document.getElementById('formulario');
 
-if (formulario) {
-    formulario.addEventListener('submit', (e) => {
+    function showFlash(message, type = 'success') {
+        // intenta insertar dentro de .container2 si existe
+        const container = document.querySelector('.container2') || document.body;
+        const div = document.createElement('div');
+        div.className = type === 'success' ? 'flash-success' : 'flash-error';
+        div.textContent = message;
+        // insertar al inicio del contenedor
+        container.insertBefore(div, container.firstChild);
+        // auto ocultar después de 3s
+        setTimeout(() => {
+            div.style.transition = 'opacity 0.4s, transform 0.4s';
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(-6px)';
+            setTimeout(() => div.remove(), 450);
+        }, 3000);
+    }
+
+    if (!formulario) return;
+
+    formulario.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         let valid = true;
@@ -14,7 +33,7 @@ if (formulario) {
         const archivo = (archivoInput && archivoInput.files && archivoInput.files.length) ? archivoInput.files[0] : null;
 
         const soloLetrasNumerosGuiones = /^[A-Za-z][A-Za-z0-9_]*$/;
-        const tlfnEspaolNueveDigitos = /^\+34\d{9}$/;
+        const tlfnEspañolNueveDigitos = /^\+34\d{9}$/;
         const soloJPEG = /\.(jpe?g)$/i;
         const maxSize = 5 * 1024 * 1024; // 5MB
 
@@ -30,7 +49,7 @@ if (formulario) {
             }
         }
 
-        if (telefono && !tlfnEspaolNueveDigitos.test(telefono.trim())) {
+        if (telefono && !tlfnEspañolNueveDigitos.test(telefono.trim())) {
             document.getElementById('telefonoError').innerText = "Debe ser un número español con prefijo +34 y 9 dígitos";
             valid = false;
         }
@@ -45,28 +64,54 @@ if (formulario) {
             }
         }
 
-        if (valid) {
-            // Enviar por AJAX usando FormData para que procesar_socio.php actualice la BD
-            const submitBtn = formulario.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.disabled = true;
+        if (!valid) return;
 
+        const submitBtn = formulario.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
             const formData = new FormData(formulario);
-            const currentId = formData.get('id'); // puede ser null para nuevo socio
-
-            fetch('procesar_socio.php', {
+            const res = await fetch('procesar_socio.php', {
                 method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error en el servidor');
-                // Redirigir para ver los cambios (si hay id, mostrar ese socio)
-                const target = currentId ? `socio.php?id=${encodeURIComponent(currentId)}#admin-socios` : 'socio.php';
-                window.location.href = target;
-            })
-            .catch(err => {
-                alert('Error al guardar: ' + err.message);
-                if (submitBtn) submitBtn.disabled = false;
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
+
+            let data = null;
+            try { data = await res.json(); } catch (err) { data = null; }
+
+            if (res.ok && data && data.success) {
+    const idPart = data.id ? `id=${encodeURIComponent(data.id)}` : '';
+    const msgPart = data.message ? `msg=${encodeURIComponent(data.message)}` : '';
+    // construir query correctamente (si hay id y msg => ?id=...&msg=...; si sólo msg => ?msg=...)
+    let query = '';
+    if (idPart && msgPart) query = `?${idPart}&${msgPart}`;
+    else if (idPart) query = `?${idPart}`;
+    else if (msgPart) query = `?${msgPart}`;
+
+    const anchor = '#admin-socios';
+    if (data.message) {
+        // mostrar banner flash y redirigir después de breve espera
+        showFlash(data.message, 'success');
+        setTimeout(() => {
+            window.location.href = `socio.php${query}${anchor}`;
+        }, 1200);
+    } else {
+        window.location.href = `socio.php${query}${anchor}`;
+    }
+} else if (res.ok) {
+                window.location.reload();
+            } else {
+                const msg = (data && data.error) ? data.error : `Error del servidor (${res.status})`;
+                showFlash(msg, 'error');
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        } catch (err) {
+            showFlash('Error de red: ' + err.message, 'error');
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
-}
+})();

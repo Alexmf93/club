@@ -1,6 +1,15 @@
 <?php
 require_once 'db_config.php';
 
+// Mostrar banner (flash) si hay mensaje en la query string
+if (!empty($_GET['msg'])) {
+    echo '<div class="flash-success">' . htmlspecialchars($_GET['msg']) . '</div>';
+} elseif (!empty($_GET['error'])) {
+    echo '<div class="flash-error">' . htmlspecialchars($_GET['error']) . '</div>';
+}
+
+require_once 'db_config.php';
+
 // Conexión global
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_password);

@@ -1,4 +1,11 @@
 <?php
+function respond_json($data, $status = 200) {
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data);
+    exit;
+}
+
 require_once 'db_config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -53,12 +60,32 @@ try {
         ':fecha' => $fecha_cita,
         ':hora' => $hora_cita
     ]);
+    $resultId = (int)$pdo->lastInsertId();
 
-    header('Location: cita.php');
-    exit;
+    $successMessage = 'Cita creada correctamente.';
+
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+              || strpos($accept, 'application/json') !== false;
+
+    if ($isAjax) {
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]);
+    } else {
+        header('Location: cita.php?msg=' . urlencode($successMessage) . '#admin-citas');
+        exit;
+    }
 
 } catch (Exception $e) {
-    header('Location: cita.php?error=' . urlencode($e->getMessage()));
-    exit;
+    $msg = $e->getMessage();
+    $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+              || strpos($accept, 'application/json') !== false;
+
+    if ($isAjax) {
+        respond_json(['success' => false, 'error' => $msg], 400);
+    } else {
+        header('Location: cita.php?error=' . urlencode($msg));
+        exit;
+    }
 }
 ?>

@@ -59,6 +59,7 @@ try {
         $fotoPath = 'imagenes/' . $filename;
     }
 
+    $successMessage = '';
     if ($id) {
         // UPDATE
         $fields = ['nombre = :nombre', 'telefono = :telefono'];
@@ -78,6 +79,7 @@ try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $resultId = $id;
+        $successMessage = 'Socio actualizado correctamente.';
     } else {
         // INSERT
         $cols = ['nombre', 'telefono'];
@@ -100,17 +102,19 @@ try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $resultId = (int) $pdo->lastInsertId();
+        $successMessage = 'Nuevo socio insertado correctamente.';
     }
 
     // Determinar si devolver JSON (AJAX) o redirigir (submit normal)
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
     $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-              || str_contains($accept, 'application/json');
+              || (is_string($accept) && strpos($accept, 'application/json') !== false);
 
     if ($isAjax) {
-        respond_json(['success' => true, 'id' => $resultId]);
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]);
     } else {
-        header('Location: socio.php?id=' . $resultId . '#admin-socios');
+        $location = 'socio.php?id=' . $resultId . '&msg=' . urlencode($successMessage) . '#admin-socios';
+        header('Location: ' . $location);
         exit;
     }
 
@@ -118,7 +122,7 @@ try {
     $msg = $e->getMessage();
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
     $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-              || str_contains($accept, 'application/json');
+              || (is_string($accept) && strpos($accept, 'application/json') !== false);
 
     if ($isAjax) {
         respond_json(['success' => false, 'error' => $msg], 400);

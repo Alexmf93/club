@@ -1,6 +1,22 @@
 const formulario = document.getElementById('formularioServicio');
 
 if (formulario) {
+    function showFlash(message, type = 'success') {
+        // intenta insertar dentro de .container2 si existe
+        const container = document.querySelector('.container2') || document.body;
+        const div = document.createElement('div');
+        div.className = type === 'success' ? 'flash-success' : 'flash-error';
+        div.textContent = message;
+        // insertar al inicio del contenedor
+        container.insertBefore(div, container.firstChild);
+        // auto ocultar después de 3s
+        setTimeout(() => {
+            div.style.transition = 'opacity 0.4s, transform 0.4s';
+            div.style.opacity = '0';
+            div.style.transform = 'translateY(-6px)';
+            setTimeout(() => div.remove(), 450);
+        }, 3000);
+    }
     formulario.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -33,36 +49,56 @@ if (formulario) {
 
         const formData = new FormData(formulario);
 
-        fetch('procesar_servicio.php', {
+        fetch('procesar_servicio.php', { // Aseguramos que el servidor responda JSON
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
         .then(function (res) {
             // Intentamos parsear JSON; si falla devolvemos un objeto que indica el estado crudo
             return res.json().catch(function () {
-                return { __rawOk: res.ok, __status: res.status };
+                // Si no es JSON, asumimos que es un error o una redirección directa
+                return { success: false, error: `Respuesta inesperada del servidor (HTTP ${res.status})` };
             });
         })
         .then(function (data) {
             if (data && data.success) {
-                const id = data.id ? `?id=${encodeURIComponent(data.id)}#admin-servicios` : '';
-                window.location.href = `servicio.php${id}`;
-                return;
+                const idPart = data.id ? `id=${encodeURIComponent(data.id)}` : '';
+                const msgPart = data.message ? `msg=${encodeURIComponent(data.message)}` : '';
+                let query = '';
+                if (idPart && msgPart) query = `?${idPart}&${msgPart}`;
+                else if (idPart) query = `?${idPart}`;
+                else if (msgPart) query = `?${msgPart}`;
+
+                const anchor = '#admin-servicios';
+
+                if (data.message) {
+                    showFlash(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = `servicio.php${query}${anchor}`;
+                    }, 1200); // Redirigir después de 1.2 segundos para que el usuario vea el mensaje
+                } else {
+                    // Si no hay mensaje, redirigir directamente
+                    window.location.href = `servicio.php${query}${anchor}`;
+                }
+                return; // ¡Importante! Detiene la ejecución para no mostrar errores falsos.
+
+            } else if (data && data.error) {
+                // Error específico del servidor
+                showFlash(data.error, 'error');
+            } else {
+                // Error genérico si la respuesta no fue exitosa
+                showFlash('Error del servidor al guardar el servicio.', 'error');
             }
 
-            if (data && data.__rawOk) {
-                // caso en que servidor respondió OK pero sin JSON
-                window.location.reload();
-                return;
-            }
-
-            // error del servidor (puede venir en data.error) o respuesta no OK
-            const msg = (data && data.error) ? data.error : 'Error del servidor al guardar el servicio';
-            alert('No se pudo guardar: ' + msg);
+            // Reactivar el botón solo en caso de error
             if (submitBtn) submitBtn.disabled = false;
         })
         .catch(function (err) {
-            alert('Error de red: ' + (err && err.message ? err.message : err));
+            showFlash('Error de red: ' + (err && err.message ? err.message : err), 'error');
             if (submitBtn) submitBtn.disabled = false;
         });
     });

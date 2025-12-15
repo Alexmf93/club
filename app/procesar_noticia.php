@@ -81,15 +81,16 @@ try {
         ':fecha_publicacion' => $fecha_publicacion,
     ]);
     $resultId = (int)$pdo->lastInsertId();
+    $successMessage = 'Noticia creada correctamente.';
 
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
     $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
               || strpos($accept, 'application/json') !== false;
 
     if ($isAjax) {
-        respond_json(['success' => true, 'id' => $resultId]);
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]);
     } else {
-        header('Location: noticia.php');
+        header('Location: noticia.php?msg=' . urlencode($successMessage));
         exit;
     }
 

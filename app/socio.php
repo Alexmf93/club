@@ -10,9 +10,17 @@ require_once 'db_config.php';
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <?php 
+    <?php
     include "menu.php";
     menu();
+
+    // Mostrar banner (flash) si hay mensaje en la query string
+    if (!empty($_GET['msg'])) {
+        echo '<div class="flash-success">' . htmlspecialchars($_GET['msg']) . '</div>';
+    } elseif (!empty($_GET['error'])) {
+        echo '<div class="flash-error">' . htmlspecialchars($_GET['error']) . '</div>';
+    }
+
 
     // Conexión a BD global
     try {
