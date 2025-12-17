@@ -122,6 +122,11 @@ try {
 
 } catch (Exception $e) {
     $msg = $e->getMessage();
+    // Comprobar si el error es por teléfono duplicado (UNIQUE constraint)
+    if (strpos($msg, 'Integrity constraint violation') !== false && strpos($msg, 'telefono') !== false) {
+        $msg = 'El teléfono introducido ya está registrado. Por favor, use otro.';
+    }
+
     $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
     $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
               || (is_string($accept) && strpos($accept, 'application/json') !== false);

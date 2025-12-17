@@ -129,8 +129,7 @@ require_once 'db_config.php';
                             <div class="form-actions">
                                 <button type="submit" class="button button-primary"><?php echo $socioData ? 'Actualizar' : 'Enviar'; ?></button>
                                 <!-- <button type="reset" class="button button-secondary">Cancelar</button>8 -->
-                                <a href='socio.php' class='button button-primary'>Prueba</a>
-                                <a href="paginaPrincipal.php" class="button button-secondary">Atras</a>
+                                <a href='socio.php' class='button button-primary'>Cancelar</a>
                             </div>
                         </div>
                     </form>

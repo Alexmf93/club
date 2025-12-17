@@ -7,14 +7,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const div = document.createElement('div');
             div.className = type === 'success' ? 'flash-success' : 'flash-error';
             div.textContent = message;
-            container.insertBefore(div, container.firstChild);
+            container.insertBefore(div, container.lastChild);
             
             setTimeout(() => {
                 div.style.transition = 'opacity 0.4s, transform 0.4s';
                 div.style.opacity = '0';
                 div.style.transform = 'translateY(-6px)';
                 setTimeout(() => div.remove(), 450);
-            }, 3000);
+            }, 9000);
         }
 
         formulario.addEventListener('submit', function (e) {
@@ -65,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(res => res.json().catch(() => ({ success: false, error: `Respuesta inesperada del servidor (HTTP ${res.status})` })))
             .then(data => {
+                console.log(data);
                 if (data && data.success) {
+                    
                     showFlash(data.message, 'success');
                     
                     // Aquí está la lógica clave:
