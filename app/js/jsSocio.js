@@ -67,20 +67,21 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data && data.success) {
                     showFlash(data.message, 'success');
-
+                    
                     // Aquí está la lógica clave:
                     if (data.operation === 'insert') {
                         // Si es una inserción, limpiamos el formulario y recargamos la página para ver el nuevo socio en la lista.
+                        formulario.reset();
                         setTimeout(() => {
                             window.location.href = 'socio.php#admin-socios';
                         }, 1200);
                     } else {
-                        // Si es una actualización, recargamos para ver los cambios en la lista.
+                        // Si es una actualización, recargamos la página sin parámetros GET para ver los cambios en la lista.
                         setTimeout(() => {
-                            window.location.reload();
+                            window.location.href = 'socio.php';
                         }, 1200);
                     }
-                    return;
+                    return; // Detenemos la ejecución para no continuar
                 }
 
                 const msg = (data && data.error) ? data.error : 'Error del servidor al guardar el socio.';
@@ -94,10 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                 }
-            });
-            
-            formulario.reset();
-        
+            });        
         });
     }
 });

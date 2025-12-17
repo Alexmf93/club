@@ -115,7 +115,7 @@ try {
     if ($isAjax) {
         respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage, 'operation' => $operation]);
     } else {
-        $location = 'socio.php?id=' . $resultId . '&msg=' . urlencode($successMessage) . '#admin-socios';
+        $location = 'socio.php?msg=' . urlencode($successMessage) . '#admin-socios';
         header('Location: ' . $location);
         exit;
     }

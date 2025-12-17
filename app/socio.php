@@ -17,6 +17,7 @@ require_once 'db_config.php';
     // Mostrar banner (flash) si hay mensaje en la query string
     if (!empty($_GET['msg'])) {
         echo '<div class="flash-success">' . htmlspecialchars($_GET['msg']) . '</div>';
+        
     } elseif (!empty($_GET['error'])) {
         echo '<div class="flash-error">' . htmlspecialchars($_GET['error']) . '</div>';
     }
@@ -57,16 +58,18 @@ require_once 'db_config.php';
     echo '<div class="news-grid">';
     if ($stmt->rowCount() > 0) {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "<article class='news-card socios-card'>
-                <img class='img_usuario' src='$row[foto]' alt='$row[nombre]'>
+            ?>
+            <article class='news-card socios-card'>
+                <img class='img_usuario' src='<?= htmlspecialchars($row['foto']) ?>' alt='<?= htmlspecialchars($row['nombre']) ?>'>
                 <div class='news-content'>
-                <h3>$row[nombre]</h3>
-                <p>Rol: $row[rol]</p>
-                <p>Teléfono: $row[telefono]</p>
-                <p>Fecha de registro: $row[fecha_registro]</p>
-            <a href='socio.php?id=$row[id]#admin-socios' class='button button-primary'>Modificar</a>
-        </div>
-    </article>";
+                    <h3><?= htmlspecialchars($row['nombre']) ?></h3>
+                    <p>Rol: <?= htmlspecialchars($row['rol']) ?></p>
+                    <p>Teléfono: <?= htmlspecialchars($row['telefono']) ?></p>
+                    <p>Fecha de registro: <?= htmlspecialchars($row['fecha_registro']) ?></p>
+                    <a href='socio.php?id=<?= (int)$row['id'] ?>#admin-socios' class='button button-primary'>Modificar</a>
+                </div>
+            </article>
+            <?php
         }
     } else {
         echo "<p>No se han encontrado socios.</p>";
@@ -90,7 +93,7 @@ require_once 'db_config.php';
                         $socioData = $stmtSocio->fetch(PDO::FETCH_ASSOC);
                     }
                     ?>
-                    <form action="procesar_socio.php" method="post" enctype="multipart/form-data" id="formularioSocio">
+                    <form action="" method="post" enctype="multipart/form-data" id="formularioSocio">
                         <div class="formulario">
                             <?php if ($socioData): ?>
                                 <input type="hidden" name="id" value="<?php echo $socioData['id']; ?>">
@@ -98,7 +101,7 @@ require_once 'db_config.php';
                             <div class="form-group-columns">
                                 <div class="form-group">
                                     <label for="nombre">Nombre</label>
-                                    <input type="text" name="nombre" id="nombre" value="<?php echo $socioData ? htmlspecialchars($socioData['nombre']) : ''; ?>"/>
+                                    <input type="text" name="nombre" id="nombre" placeholder="Ingresa tu nombre" value="<?php echo $socioData ? htmlspecialchars($socioData['nombre']) : ''; ?>"/>
                                     <span id="nombreError" class="error"></span>
                                 </div>
                               
@@ -122,18 +125,28 @@ require_once 'db_config.php';
                                     <p><small>Foto actual: <img src="<?php echo $socioData['foto']; ?>" style="max-width:100px;"></small></p>
                                 <?php endif; ?>
                             </div>
+                            
                             <div class="form-actions">
                                 <button type="submit" class="button button-primary"><?php echo $socioData ? 'Actualizar' : 'Enviar'; ?></button>
-                                <button type="reset" class="button button-secondary">Cancelar</button>
+                                <!-- <button type="reset" class="button button-secondary">Cancelar</button>8 -->
+                                <a href='socio.php' class='button button-primary'>Prueba</a>
                                 <a href="paginaPrincipal.php" class="button button-secondary">Atras</a>
                             </div>
                         </div>
                     </form>
                 </div>
             </section>
+            
         </main>
     </div>
     <?php
+        // Mostrar banner (flash) si hay mensaje en la query string
+    if (!empty($_GET['msg'])) {
+        echo '<div class="flash-success">' . htmlspecialchars($_GET['msg']) . '</div>';
+        
+    } elseif (!empty($_GET['error'])) {
+        echo '<div class="flash-error">' . htmlspecialchars($_GET['error']) . '</div>';
+    }
         include "footer.php";
         pie();
     ?>
