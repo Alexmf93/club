@@ -137,6 +137,6 @@ require_once 'db_config.php';
         include "footer.php";
         pie();
     ?>
-    <script src="js/jsSocio.js"></script>
+    <script src="js/jsSocio.js?v=1.1"></script>
 </body>
 </html>

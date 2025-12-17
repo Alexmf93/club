@@ -1,117 +1,103 @@
-(function () {
-    const formulario = document.getElementById('formularioSocio') || document.getElementById('formulario');
+document.addEventListener('DOMContentLoaded', function () {
+    const formulario = document.getElementById('formularioSocio');
 
-    function showFlash(message, type = 'success') {
-        // intenta insertar dentro de .container2 si existe
-        const container = document.querySelector('.container2') || document.body;
-        const div = document.createElement('div');
-        div.className = type === 'success' ? 'flash-success' : 'flash-error';
-        div.textContent = message;
-        // insertar al inicio del contenedor
-        container.insertBefore(div, container.firstChild);
-        // auto ocultar después de 3s
-        setTimeout(() => {
-            div.style.transition = 'opacity 0.4s, transform 0.4s';
-            div.style.opacity = '0';
-            div.style.transform = 'translateY(-6px)';
-            setTimeout(() => div.remove(), 450);
-        }, 3000);
-    }
-
-    if (!formulario) return;
-
-    formulario.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        let valid = true;
-        document.querySelectorAll('.error').forEach(span => span.innerText = "");
-
-        const nombre = document.getElementById('nombre')?.value ?? "";
-        const password = document.getElementById('password')?.value ?? "";
-        const telefono = document.getElementById('telefono')?.value ?? "";
-        const archivoInput = document.getElementById('foto');
-        const archivo = (archivoInput && archivoInput.files && archivoInput.files.length) ? archivoInput.files[0] : null;
-
-        const soloLetrasNumerosGuiones = /^[A-Za-z][A-Za-z0-9_]*$/;
-        const tlfnEspañolNueveDigitos = /^\+34\d{9}$/;
-        const soloJPEG = /\.(jpe?g)$/i;
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
-        if (nombre.trim().length < 3 || nombre.trim().length > 50) {
-            document.getElementById('nombreError').innerText = "El nombre debe contener entre 3 y 50 caracteres";
-            valid = false;
+    if (formulario) {
+        function showFlash(message, type = 'success') {
+            const container = document.querySelector('.container2') || document.body;
+            const div = document.createElement('div');
+            div.className = type === 'success' ? 'flash-success' : 'flash-error';
+            div.textContent = message;
+            container.insertBefore(div, container.firstChild);
+            
+            setTimeout(() => {
+                div.style.transition = 'opacity 0.4s, transform 0.4s';
+                div.style.opacity = '0';
+                div.style.transform = 'translateY(-6px)';
+                setTimeout(() => div.remove(), 450);
+            }, 3000);
         }
 
-        if (password) {
-            if (password.trim().length < 8 || password.trim().length > 16 || !soloLetrasNumerosGuiones.test(password.trim())) {
-                document.getElementById('contraseñaError').innerText = "La contraseña debe tener 8-16 caracteres, empezar por letra y solo contener letras, números o _";
+        formulario.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            document.querySelectorAll('.error').forEach(span => span.innerText = "");
+
+            const nombre = (document.getElementById('nombre').value || '').trim();
+            const telefono = (document.getElementById('telefono').value || '').trim();
+            const password = (document.getElementById('password').value || '');
+            const idInput = formulario.querySelector('input[name="id"]');
+            const isUpdate = idInput && idInput.value;
+
+            let valid = true;
+
+            if (nombre.length < 3) {
+                document.getElementById('nombreError').innerText = "El nombre debe tener al menos 3 caracteres.";
                 valid = false;
             }
-        }
 
-        if (telefono && !tlfnEspañolNueveDigitos.test(telefono.trim())) {
-            document.getElementById('telefonoError').innerText = "Debe ser un número español con prefijo +34 y 9 dígitos";
-            valid = false;
-        }
-
-        if (archivo) {
-            if (!soloJPEG.test(archivo.name)) {
-                document.getElementById('fotoError').innerText = "El formato de la imagen debe ser JPEG (.jpg/.jpeg)";
-                valid = false;
-            } else if (archivo.size > maxSize) {
-                document.getElementById('fotoError').innerText = "La imagen no debe superar los 5MB";
+            if (telefono && !/^\d{9}$/.test(telefono)) {
+                document.getElementById('telefonoError').innerText = "El teléfono debe tener 9 dígitos.";
                 valid = false;
             }
-        }
 
-        if (!valid) return;
+            if (!isUpdate && password.length < 6) {
+                document.getElementById('contraseñaError').innerText = "La contraseña es obligatoria y debe tener al menos 6 caracteres.";
+                valid = false;
+            } else if (isUpdate && password && password.length < 6) {
+                document.getElementById('contraseñaError').innerText = "Si cambia la contraseña, debe tener al menos 6 caracteres.";
+                valid = false;
+            }
 
-        const submitBtn = formulario.querySelector('button[type="submit"]');
-        if (submitBtn) submitBtn.disabled = true;
+            if (!valid) return;
 
-        try {
+            const submitBtn = formulario.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
             const formData = new FormData(formulario);
-            const res = await fetch('procesar_socio.php', {
+
+            fetch('procesar_socio.php', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            });
+            })
+            .then(res => res.json().catch(() => ({ success: false, error: `Respuesta inesperada del servidor (HTTP ${res.status})` })))
+            .then(data => {
+                if (data && data.success) {
+                    showFlash(data.message, 'success');
 
-            let data = null;
-            try { data = await res.json(); } catch (err) { data = null; }
+                    // Aquí está la lógica clave:
+                    if (data.operation === 'insert') {
+                        // Si es una inserción, limpiamos el formulario y recargamos la página para ver el nuevo socio en la lista.
+                        setTimeout(() => {
+                            window.location.href = 'socio.php#admin-socios';
+                        }, 1200);
+                    } else {
+                        // Si es una actualización, recargamos para ver los cambios en la lista.
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1200);
+                    }
+                    return;
+                }
 
-            if (res.ok && data && data.success) {
-    const idPart = data.id ? `id=${encodeURIComponent(data.id)}` : '';
-    const msgPart = data.message ? `msg=${encodeURIComponent(data.message)}` : '';
-    // construir query correctamente (si hay id y msg => ?id=...&msg=...; si sólo msg => ?msg=...)
-    let query = '';
-    if (idPart && msgPart) query = `?${idPart}&${msgPart}`;
-    else if (idPart) query = `?${idPart}`;
-    else if (msgPart) query = `?${msgPart}`;
-
-    const anchor = '#admin-socios';
-    if (data.message) {
-        // mostrar banner flash y redirigir después de breve espera
-        showFlash(data.message, 'success');
-        setTimeout(() => {
-            window.location.href = `socio.php${query}${anchor}`;
-        }, 1200);
-    } else {
-        window.location.href = `socio.php${query}${anchor}`;
-    }
-} else if (res.ok) {
-                window.location.reload();
-            } else {
-                const msg = (data && data.error) ? data.error : `Error del servidor (${res.status})`;
+                const msg = (data && data.error) ? data.error : 'Error del servidor al guardar el socio.';
                 showFlash(msg, 'error');
-                if (submitBtn) submitBtn.disabled = false;
-            }
-        } catch (err) {
-            showFlash('Error de red: ' + err.message, 'error');
-            if (submitBtn) submitBtn.disabled = false;
-        }
-    });
-})();
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(err => {
+                showFlash('Error de red: ' + (err && err.message ? err.message : err), 'error');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            formulario.reset();
+        
+        });
+    }
+});
