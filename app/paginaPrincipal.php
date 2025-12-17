@@ -66,11 +66,18 @@ require_once 'db_config.php';
                             <div class='news-content'>
                                 <h3>" . htmlspecialchars($row['titulo']) . "</h3>
                                 <p>" . htmlspecialchars($contenido_corto) . "</p>
-                                <a href='noticia.php' class='button button-primary read-more'>Leer más</a>
+                                <button class='button button-primary read-more' 
+                                        data-titulo='" . htmlspecialchars($row['titulo'], ENT_QUOTES) . "' 
+                                        data-contenido='" . htmlspecialchars($row['contenido'], ENT_QUOTES) . "' 
+                                        data-imagen='" . htmlspecialchars($row['imagen'], ENT_QUOTES) . "'
+                                        data-fecha='" . htmlspecialchars($row['fecha_publicacion']) . "'>
+                                    Leer más
+                                </button>
                             </div>
                         </article>";
                     }
                     echo '</div>';
+                    echo '<div style="text-align: center; margin-top: 2rem;"><a href="noticia.php" class="button button-secondary">Ver todas las noticias</a></div>';
                 }
             ?>
         </div>
@@ -135,6 +142,9 @@ require_once 'db_config.php';
 ?>
 <!-- Scripts -->
 <script src="js/script.js"></script>
+<!-- <script src="js/jsNoticia.js"></script> -->
+<!-- <script src="js/modalNoticia.js"></script> -->
+
 
 </body>
 </html>

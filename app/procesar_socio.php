@@ -80,6 +80,7 @@ try {
         $stmt->execute($params);
         $resultId = $id;
         $successMessage = 'Socio actualizado correctamente.';
+        $operation = 'update';
     } else {
         // INSERT
         $cols = ['nombre', 'telefono'];
@@ -103,6 +104,7 @@ try {
         $stmt->execute($params);
         $resultId = (int) $pdo->lastInsertId();
         $successMessage = 'Nuevo socio insertado correctamente.';
+        $operation = 'insert';
     }
 
     // Determinar si devolver JSON (AJAX) o redirigir (submit normal)
@@ -111,7 +113,7 @@ try {
               || (is_string($accept) && strpos($accept, 'application/json') !== false);
 
     if ($isAjax) {
-        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage]);
+        respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage, 'operation' => $operation]);
     } else {
         $location = 'socio.php?id=' . $resultId . '&msg=' . urlencode($successMessage) . '#admin-socios';
         header('Location: ' . $location);

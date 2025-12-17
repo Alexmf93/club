@@ -172,5 +172,7 @@ include "footer.php";
 pie();
 ?>
 <script src="js/jsNoticia.js"></script>
+<!-- <script src="js/modalNoticia.js"></script> -->
+ <script src="js/script.js"></script>
 </body>
 </html>
