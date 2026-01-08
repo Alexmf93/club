@@ -131,6 +131,7 @@ try {
             </div>
         </section>
 
+        <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] == 'administrador'): ?>
         <section id="admin-noticias">
             <div class="container">
                 <h2>Insertar Nueva Noticia</h2>
@@ -165,6 +166,7 @@ try {
                 </form>
             </div>
         </section>
+        <?php endif; ?>
     </main>
 </div>
 
