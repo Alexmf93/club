@@ -13,8 +13,9 @@ function menu() { ?>
         <?php endif; ?>
         <a href="servicio.php">Servicios</a>
         <a href="noticia.php">Gestión Noticias</a>
+        <?php if(isset($_SESSION['rol'])): ?>
         <a href="cita.php">Citas</a>
-     
+        <?php endif; ?>
 
         <div class="auth-section">
             <?php if(isset($_SESSION['username'])): ?>

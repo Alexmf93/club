@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once 'db_config.php';
+if(!(isset($_SESSION['rol']) && $_SESSION['rol'] == 'socio' || $_SESSION['rol'] == 'administrador')){
+    header("Location: paginaPrincipal.php");
+    exit;
+
+}
 
 // Mostrar banner (flash) si hay mensaje en la query string
 if (!empty($_GET['msg'])) {
@@ -37,9 +42,20 @@ $sql_citas = "SELECT c.*, u.nombre as socio, u.telefono, s.descripcion as servic
               JOIN usuarios u ON c.id_socio = u.id 
               JOIN servicios s ON c.id_servicio = s.id 
               WHERE DATE(c.fecha_cita) BETWEEN :inicio AND :fin
-              ORDER BY c.fecha_cita ASC";
+              ";
+
+$params_citas = [':inicio' => $fecha_inicio, ':fin' => $fecha_fin];
+
+// Si no es administrador, filtrar solo sus citas
+if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'administrador') {
+    $sql_citas .= " AND c.id_socio = :id_usuario";
+    $params_citas[':id_usuario'] = $_SESSION['user_id'];
+}
+
+$sql_citas .= " ORDER BY c.fecha_cita ASC";
+
 $stmt_citas = $pdo->prepare($sql_citas);
-$stmt_citas->execute([':inicio' => $fecha_inicio, ':fin' => $fecha_fin]);
+$stmt_citas->execute($params_citas);
 $citas_mes = $stmt_citas->fetchAll(PDO::FETCH_ASSOC);
 
 // Agrupar citas por fecha
@@ -118,6 +134,8 @@ foreach ($citas_mes as $cita) {
 <body>
 <?php include "menu.php"; menu(); ?>
 
+
+<?php if(isset($_SESSION['username'])): ?>
 <div class="container2">
     <main>
         <!-- CALENDARIO -->
@@ -180,25 +198,27 @@ for ($semana = 0; $semana < 6; $semana++) {
 }
 echo '</tbody></table>';
 ?>
+   <?php endif; ?>
 
             </div>
         </section>
 
         <!-- BUSCADOR DE CITAS -->
+
         <section id="buscador-citas">
             <div class="container">
                 <h2>Buscar Citas</h2>
                 <form method="get" action="cita.php" id="formBuscador" class="search-form">
                     <input type="hidden" name="mes" value="<?php echo $mes; ?>">
                     <input type="hidden" name="año" value="<?php echo $año; ?>">
-                    <input type="text" name="buscar_socio" placeholder="Buscar por nombre del socio" value="<?php echo htmlspecialchars($_GET['buscar_socio'] ?? ''); ?>">
-                    <input type="date" name="buscar_fecha" value="<?php echo htmlspecialchars($_GET['buscar_fecha'] ?? ''); ?>">
+                     <input type="text" name="buscar_socio" id="buscar_socio" placeholder="Buscar socio..." value="<?php echo isset($_GET['buscar_socio']) ? htmlspecialchars($_GET['buscar_socio']) : (isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : ''); ?>">
+                    <input type="hidden"name="id_autor" id="id_autor" value="<?php echo $_SESSION['user_id'] ?>">
                     <select name="buscar_servicio">
                         <option value="">-- Todos los servicios --</option>
 <?php
 $stmtServ = $pdo->query("SELECT id, descripcion FROM servicios ORDER BY descripcion ASC");
 while ($srv = $stmtServ->fetch(PDO::FETCH_ASSOC)) {
-    $selected = (isset($_GET['buscar_servicio']) && $_GET['buscar_servicio'] == $srv['id']) ? 'selected' : '';
+    $selected = (isset($_GET['buscar_servicio']) && $_GET['buscar_servicio'] == $srv['username']) ? 'selected' : '';
     echo '<option value="' . $srv['id'] . '" ' . $selected . '>' . htmlspecialchars($srv['descripcion']) . '</option>';
 }
 ?>
@@ -215,6 +235,12 @@ $sql_busqueda = "SELECT c.*, u.nombre as socio, u.telefono, s.descripcion as ser
                  JOIN servicios s ON c.id_servicio = s.id 
                  WHERE 1=1";
 $params = [];
+
+// Si no es administrador, filtrar solo sus citas en la búsqueda
+if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'administrador') {
+    $sql_busqueda .= " AND c.id_socio = :id_usuario";
+    $params[':id_usuario'] = $_SESSION['user_id'];
+}
 
 if (!empty($_GET['buscar_socio'])) {
     $sql_busqueda .= " AND u.nombre LIKE :socio";
@@ -277,15 +303,8 @@ if ($resultados) {
                     <div class="formulario">
                         <div class="form-group">
                             <label for="id_socio">Socio</label>
-                            <select name="id_socio" id="id_socio">
-                                <option value="">-- Seleccionar socio --</option>
-<?php
-$stmtSocios = $pdo->query("SELECT id, nombre, telefono FROM usuarios ORDER BY nombre ASC");
-while ($socio = $stmtSocios->fetch(PDO::FETCH_ASSOC)) {
-    echo '<option value="' . $socio['id'] . '">' . htmlspecialchars($socio['nombre']) . ' (' . htmlspecialchars($socio['telefono']) . ')</option>';
-}
-?>
-                            </select>
+                            <input type="text" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" readonly>
+                            <input type="hidden" name="id_socio" id="id_socio" value="<?php echo $_SESSION['user_id']; ?>">
                             <span id="id_socioError" class="error"></span>
                         </div>
                         <div class="form-group">
