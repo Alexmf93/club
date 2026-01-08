@@ -137,6 +137,24 @@ require_once 'db_config.php';
         </div>
     </section>
 </main>
+<!-- Chatbot -->
+    <button class="chatbot-toggle" id="chatbotToggle">💬</button>
+    
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h3>🎾 Club de Socios</h3>
+            <p>Asistente Virtual</p>
+        </div>
+        
+        <div class="chatbot-messages" id="chatbotMessages"></div>
+        
+        <div class="quick-replies" id="chatbotQuickReplies"></div>
+        
+        <div class="chatbot-input">
+            <input type="text" id="chatbotUserInput" placeholder="Escribe tu mensaje...">
+            <button onclick="chatbotSendMessage()">Enviar</button>
+        </div>
+    </div>
 
 <?php
     include "footer.php";
@@ -144,6 +162,7 @@ require_once 'db_config.php';
 ?>
 <!-- Scripts -->
 <script src="js/script.js"></script>
+<script src="js/chatbot.js"></script>
 <!-- <script src="js/jsNoticia.js"></script> -->
 <!-- <script src="js/modalNoticia.js"></script> -->
 
