@@ -636,6 +636,140 @@ section h2::after {
     }
 }
 
+/* c:\Users\AULA4-2DAW\Desktop\club\app\css\styles.css */
+
+/* ... existing code ... */
+@media (max-width: 768px) {
+    .menu {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .menu a {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ========================
+   User Menu / Dropdown
+======================== */
+.auth-section {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.user-button:hover, .user-button:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #ff6b6b;
+    outline: none;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: #2d2d2d;
+    min-width: 200px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid #444;
+    overflow: hidden;
+    z-index: 1100;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Override .menu a styles for dropdown items */
+.menu .dropdown-menu a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0;
+    border-radius: 0;
+    text-transform: none;
+    background: transparent;
+    border-bottom: 1px solid #3a3a3a;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    justify-content: flex-start;
+}
+
+.menu .dropdown-menu a:last-child {
+    border-bottom: none;
+}
+
+.menu .dropdown-menu a:hover {
+    background: #3a3a3a;
+    color: #ff6b6b;
+    transform: none;
+}
+
+.menu .dropdown-menu a::before {
+    display: none;
+}
+
+.dropdown-item .icon {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* Responsive adjustments for auth section */
+@media (max-width: 768px) {
+    .auth-section {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+    }
+    
+    .user-menu {
+        width: 100%;
+    }
+    
+    .user-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        background: rgba(0,0,0,0.2);
+        margin-top: 10px;
+    }
+}
+
+
 /* ========================
    Modal para Noticias
 ======================== */
@@ -823,3 +957,4 @@ section h2::after {
     from { transform: translateY(-6px); opacity: 0; }
     to   { transform: translateY(0); opacity: 1; }
 }
+

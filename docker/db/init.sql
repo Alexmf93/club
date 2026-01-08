@@ -5,7 +5,7 @@ IF NOT EXISTS usuarios
     nombre VARCHAR(100) NOT NULL,
     edad INT,
     clave VARCHAR(255) NOT NULL,
-    rol ENUM('socio','administrador') NOT NULL DEFAULT 'socio',
+    rol ENUM('socio','administrador', 'normal') NOT NULL DEFAULT 'socio',
     telefono VARCHAR(20) UNIQUE,
     foto VARCHAR(100),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP

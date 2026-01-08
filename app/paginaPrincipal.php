@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'db_config.php';
 ?>
 
@@ -17,6 +18,7 @@ require_once 'db_config.php';
 
 <?php 
     include "menu.php";
+   
     menu();
 
     // Conexión única a la base de datos para toda la página

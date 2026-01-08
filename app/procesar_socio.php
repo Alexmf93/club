@@ -115,7 +115,15 @@ try {
     if ($isAjax) {
         respond_json(['success' => true, 'id' => $resultId, 'message' => $successMessage, 'operation' => $operation]);
     } else {
-        $location = 'socio.php?msg=' . urlencode($successMessage) . '#admin-socios';
+        // Verificar si hay una URL de redirección personalizada
+        $redirectUrl = $_POST['redirect_url'] ?? 'socio.php';
+        $location = $redirectUrl . '?msg=' . urlencode($successMessage);
+        
+        // Si es socio.php, añadimos el ancla
+        if ($redirectUrl === 'socio.php') {
+            $location .= '#admin-socios';
+        }
+        
         header('Location: ' . $location);
         exit;
     }
