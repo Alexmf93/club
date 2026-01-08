@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'db_config.php';
 
 // Mostrar banner (flash) si hay mensaje en la query string
