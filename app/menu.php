@@ -8,7 +8,9 @@ function menu() { ?>
         <a href="paginaPrincipal.php#equipos">Nuestros servicios</a>
         <!-- Gestión interna -->
         <a href="testimonio.php">Testimonios</a>
+         <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] == 'administrador'): ?>
         <a href="socio.php">Socios</a>
+        <?php endif; ?>
         <a href="servicio.php">Servicios</a>
         <a href="noticia.php">Gestión Noticias</a>
         <a href="cita.php">Citas</a>

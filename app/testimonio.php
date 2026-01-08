@@ -81,7 +81,7 @@ try {
 ?>
             </div>
         </section>
-
+        <?php if(isset($_SESSION['username'])): ?>
         <section id="admin-testimonios">
             <div class="container">
                 <h2>Insertar Nuevo Testimonio</h2>
@@ -89,23 +89,9 @@ try {
                     <div class="formulario">
                         <div class="form-group">
                             <label for="id_autor">Autor (Socio)</label>
-                            <select name="id_autor" id="id_autor">
-                                <option value="">-- Seleccionar socio --</option>
-<?php
-// Obtener lista de socios para el select
-try {
-    $stmtSocios = $pdo->query("SELECT id, nombre FROM usuarios ORDER BY nombre ASC");
-    if ($stmtSocios && $stmtSocios->rowCount() > 0) {
-        while ($socio = $stmtSocios->fetch(PDO::FETCH_ASSOC)) {
-            echo '<option value="' . (int)$socio['id'] . '">' . htmlspecialchars($socio['nombre']) . '</option>';
-        }
-    }
-} catch (PDOException $e) {
-    echo '<option disabled>Error al cargar socios</option>';
-}
-?>
-                            </select>
-                            <span id="id_autorError" class="error"></span>
+                            <input type="text"name="nombre" id="nombre" value="<?php echo $_SESSION['username'] ?>">
+                            <input type="hidden"name="id_autor" id="id_autor" value="<?php echo $_SESSION['user_id'] ?>">
+
                         </div>
                         <div class="form-group">
                             <label for="contenido">Testimonio</label>
@@ -121,6 +107,8 @@ try {
                 </form>
             </div>
         </section>
+        <?php endif; ?>
+        <!-- final -->
     </main>
 </div>
 
