@@ -18,7 +18,7 @@ function pie() {
             </p>
 
             <nav style="margin-top: 12px;">
-                <a href="paginaPrincipal.php" style="color: #fff; margin: 0 10px; text-decoration: none;">Inicio</a>
+                <a href="index.php" style="color: #fff; margin: 0 10px; text-decoration: none;">Inicio</a>
                 <a href="contacto.php" style="color: #fff; margin: 0 10px; text-decoration: none;">Contacto</a>
                 <a href="politica.php" style="color: #fff; margin: 0 10px; text-decoration: none;">Política de Privacidad</a>
             </nav>

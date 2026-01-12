@@ -101,7 +101,7 @@ try {
                         <div class="form-actions">
                             <button type="submit" class="button button-primary">Enviar</button>
                             <button type="reset" class="button button-secondary">Cancelar</button>
-                            <a href="paginaPrincipal.php" class="button button-secondary">Atrás</a>
+                            <a href="index.php" class="button button-secondary">Atrás</a>
                         </div>
                     </div>
                 </form>

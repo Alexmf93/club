@@ -82,7 +82,7 @@ if (!isset($_SESSION['user_id'])) {
                             
                             <div class="form-actions">
                                 <button type="submit" class="button button-primary">Guardar Cambios</button>
-                                <a href='paginaPrincipal.php' class='button button-secondary'>Cancelar</a>
+                                <a href='index.php' class='button button-secondary'>Cancelar</a>
                             </div>
                         </div>
                     </form>

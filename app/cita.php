@@ -2,10 +2,10 @@
 session_start();
 require_once 'db_config.php';
 if(!(isset($_SESSION['rol']) && $_SESSION['rol'] == 'socio' || $_SESSION['rol'] == 'administrador')){
-    header("Location: paginaPrincipal.php");
+    header("Location: index.php");
     exit;
 
-}
+} 
 
 // Mostrar banner (flash) si hay mensaje en la query string
 if (!empty($_GET['msg'])) {
@@ -333,7 +333,7 @@ while ($srv = $stmtServ->fetch(PDO::FETCH_ASSOC)) {
                         <div class="form-actions">
                             <button type="submit" class="button button-primary">Enviar</button>
                             <button type="reset" class="button button-secondary">Cancelar</button>
-                            <a href="paginaPrincipal.php" class="button button-secondary">Atrás</a>
+                            <a href="index.php" class="button button-secondary">Atrás</a>
                         </div>
                     </div>
                 </form>

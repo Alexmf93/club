@@ -53,7 +53,7 @@ try {
         $_SESSION['username'] = $user['nombre'];
         $_SESSION['rol'] = $user['rol'];
         
-        header('Location: paginaPrincipal.php');
+        header('Location: index.php');
         exit;
         
     } else {

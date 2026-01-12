@@ -3,9 +3,9 @@ require_once 'check_sesion.php';
 function menu() { ?>
     <nav class="menu">
         <!-- Menú principal de la web -->
-        <a href="paginaPrincipal.php">Inicio</a>
-        <a href="paginaPrincipal.php#noticias">Noticias destacadas</a>
-        <a href="paginaPrincipal.php#equipos">Nuestros servicios</a>
+        <a href="index.php">Inicio</a>
+        <a href="index.php#noticias">Noticias destacadas</a>
+        <a href="index.php#equipos">Nuestros servicios</a>
         <!-- Gestión interna -->
         <a href="testimonio.php">Testimonios</a>
          <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] == 'administrador'): ?>

@@ -2,7 +2,7 @@
 session_start();
 require_once 'db_config.php';
 if(!(isset($_SESSION['rol']) && $_SESSION['rol'] == 'administrador')){
-    header("Location: paginaPrincipal.php");
+    header("Location: index.php");
     exit;
 
 }

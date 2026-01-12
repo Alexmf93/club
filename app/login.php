@@ -3,7 +3,7 @@ session_start();
 require_once('check_sesion.php');
 
 if(is_logged_in()){
-    header('Location: paginaPrincipal.php');
+    header('Location: index.php');
     exit;
 }
 ?>
