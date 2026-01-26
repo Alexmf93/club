@@ -1,7 +1,12 @@
 <?php
 require_once 'check_sesion.php';
 function menu() { ?>
-    <nav class="menu">
+    <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <nav class="menu" id="navMenu">
         <!-- Menú principal de la web -->
         <a href="index.php">Inicio</a>
         <a href="index.php#noticias">Noticias destacadas</a>
@@ -44,6 +49,27 @@ function menu() { ?>
         
     </nav>
 <script>
+    // Toggle del menú hamburguesa
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    if(menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navMenu.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+        
+        // Cerrar menú al hacer click en un enlace
+        const menuLinks = navMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                menuToggle.classList.remove('active');
+            });
+        });
+    }
+    
     // Toggle del menú desplegable
     const userMenuBtn = document.getElementById('userMenuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
@@ -61,5 +87,6 @@ function menu() { ?>
             }
         });
     }
+</script>
 </script>
 <?php } ?>
