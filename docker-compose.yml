@@ -11,6 +11,7 @@ services:
       - "8080:80"
     volumes:
       - ./app:/var/www/html
+      - ./video:/var/www/html/video
     depends_on:
       - database
     environment:

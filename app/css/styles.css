@@ -156,6 +156,31 @@ h1, h2, h3 {
     margin-right: auto;
 }
 
+/* ========================
+   Video Section
+======================== */
+.video-section {
+    padding: 60px 20px;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(45, 45, 45, 0.95) 100%);
+    text-align: center;
+}
+
+.video-section .container {
+    display: flex;
+    justify-content: center;
+}
+
+.video-section video {
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.video-section video:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 50px rgba(255, 107, 107, 0.5);
+}
+
 @keyframes slideInDown {
     from {
         opacity: 0;
