@@ -79,7 +79,7 @@ try {
                 : $row['contenido'];
 
             echo '<article class="news-card">
-                    <img src="' . htmlspecialchars($row['imagen']) . '" alt="' . htmlspecialchars($row['titulo']) . '">
+                    <img src="' . htmlspecialchars($row['imagen']) . '" alt="' . htmlspecialchars($row['titulo']) . '" loading="lazy" width="400" height="300" class="new_image">
                     <div class="news-content">
                         <h3>' . htmlspecialchars($row['titulo']) . '</h3>
                         <p>' . htmlspecialchars($contenido_corto) . '</p>
