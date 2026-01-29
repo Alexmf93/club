@@ -20,6 +20,14 @@
     <!-- Theme color -->
     <meta name="theme-color" content="#000000">
 
+    <!-- Favicon para navegadores (incluye móviles) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-192.png">
     
+    <!-- Específico para Apple (pantalla de inicio iOS) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-192.png">
+    
+    <!-- Para Android (PWA) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
 </head>
-<body>
+
