@@ -55,9 +55,9 @@ require_once 'db_config.php';
 
     <section class="video-section">
         <div class="container">
-            <video controls preload="metadata" width="100%" style="max-width: 800px;">
-                <source src="../video/videoPromocional.mp4" type="video/mp4">
-                <source src="../video/videoPromocional.webm" type="video/webm">
+            <video controls preload="metadata" width="100%" style="max-width: 800px;" poster="assets/imagen-preview.jpg">
+                <source src="assets/videoPromocional.mp4" type="video/mp4">
+                <source src="assets/videoPromocional.webm" type="video/webm">
                 Tu navegador no soporta la etiqueta video.
             </video>
         </div>
