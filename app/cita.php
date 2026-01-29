@@ -68,13 +68,8 @@ foreach ($citas_mes as $cita) {
     $citas_agrupadas[$fecha_key][] = $cita;
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citas</title>
-    <link rel="stylesheet" href="css/styles.css">
+<?php include "head.php"; ?>
+<body>
     <style>
         .calendar {
             width: 100%;
