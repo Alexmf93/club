@@ -10,22 +10,7 @@ require_once 'db_config.php';
    
     menu();
 
-    // Conexión única a la base de datos para toda la página
-    try {
-        $pdo = new PDO(
-            "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
-            $db_user,
-            $db_password
-        );
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        // Si la conexión falla, muestra un error y detiene la ejecución.
-        echo '<main><div class="container"><p class="error">❌ Error de conexión: ' . htmlspecialchars($e->getMessage()) . '</p></div></main>';
-        include "footer.php";
-        pie();
-        echo '</body></html>';
-        exit;
-    }
+    // Conexión ya establecida en db_config.php, usamos $pdo directamente.
 ?>
 
 <!-- SECCIONES PRINCIPALES -->
@@ -124,7 +109,7 @@ require_once 'db_config.php';
                         $meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
                         $mes = $meses[(int)$fechaObj->format('m') - 1];
                         $fechaFormato = $fechaObj->format('j') . ' de ' . $mes . ' de ' . $fechaObj->format('Y');
-                        
+
                         echo "
                         <article class='service-item'>
                             <h3>" . htmlspecialchars($row['nombre']) . "</h3>
@@ -135,6 +120,19 @@ require_once 'db_config.php';
                     echo '</div>';
                 }
             ?>
+        </div>
+    </section>
+
+    <!-- TIEMPO -->
+    <section id="tiempo" class="weather-section">
+        <div class="container">
+            <h2>El tiempo</h2>
+            <div class="weather-search">
+                <input type="text" id="ciudadInput" placeholder="Escribe una ciudad..." autocomplete="off">
+                <button id="btnBuscarCiudad" class="button button-primary">Buscar</button>
+            </div>
+            <div id="weatherCargando" class="weather-loading" style="display:none;">Cargando datos...</div>
+            <div id="weatherResultados" class="weather-results"></div>
         </div>
     </section>
 </main>
@@ -164,6 +162,7 @@ require_once 'db_config.php';
 <!-- Scripts -->
 <script src="js/script.js"></script>
 <script src="js/chatbot.js"></script>
+<script src="js/weather.js" defer></script>
 <!-- <script src="js/jsNoticia.js"></script> -->
 <!-- <script src="js/modalNoticia.js"></script> -->
 <script>
